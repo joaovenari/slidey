@@ -28,6 +28,12 @@ At runtime the plugin runs a local HTTP server (Fastify, default port 3000) that
 
 Markdown → slides is a 3-phase processor pipeline (template → slide structure → content, 15+ ordered processors). `LatexProcessor` must precede `MediaProcessor`. Don't reorder without reading `CONTRIBUTING.md`.
 
+### Slide presets (`src/presets.ts`, `src/obsidian/processors/presetProcessor.ts`)
+
+Slidey-specific. A preset = a named look a slide opts into via `preset:` in the note frontmatter (deck default) or `<!-- slide preset="x" -->` per slide (`preset: none` opts out). `PresetProcessor` (phase 2, after `defaultBackgroundProcessor`) stamps a `slidey-preset-<name>` class onto the slide annotation and routes any preset `background` through the `bg` attribute (→ `data-background-color`, so reveal's background layer paints it). `buildPresetCss()` turns each preset's structured fields (background/color/accent/fontScale/align) + raw `css` (with `&` = the slide selector) into CSS scoped to `.reveal .slides section.slidey-preset-<name>`, which `revealRenderer` injects as `<style id="slidey-presets">` in both templates (cascades below the theme, above user CSS). Presets live in plugin settings (`settings.presets`), seeded from `STARTER_PRESETS`, edited in Settings → Slide presets. **Test note:** `C:\Claude\Vault Claude\02 - Projetos\Slidey\_slidey-smoke-test.md` exercises all of this.
+
+Known: literal `<!-- slide ... -->` text anywhere in a slide's content (inline code included) is parsed as a real annotation — inherited footgun, `protectFencedCode` only shields fenced blocks.
+
 ## Running it in development
 
 Prereqs: Node 24+, pnpm (via `corepack` — `corepack pnpm ...`, the repo pins the version in `package.json`).
@@ -42,7 +48,7 @@ OUTDIR="<dev-vault>/.obsidian/plugins/slidey" corepack pnpm dev
 
 ## Status
 
-As of 2026-09-07: fork assembled, rebranded, builds clean, **smoke-tested live in Obsidian over CDP**, and **`0.1.0` released** (prerelease, cut locally — the reworked `release.yml` is in place but not yet exercised on a run). `release.yml` / `build.yml` / `codeql.yml` all de-submoduled. Next real feature work: presenter-clicker focus-robustness (basic keys already work), then presets, image layout, export polish. Prior-art notes live in Claude memory (`slidey-research-markdown-slides`).
+As of 2026-09-07: fork assembled, rebranded, builds clean, **smoke-tested live in Obsidian over CDP**, **`0.1.0` released** (prerelease, cut locally — reworked `release.yml` in place but not yet run), **presentation-clicker robustness** shipped + verified, and **slide presets** (7 starters + settings UI) shipped + verified. `release.yml` / `build.yml` / `codeql.yml` all de-submoduled. Next: tune the starter presets with the user, then image-layout defaults and export polish. Prior-art notes in Claude memory (`slidey-research-markdown-slides`).
 
 Known gap: the repo is private, so the plugin's runtime `slidey.zip` download 401s on a fresh non-dev install — needs the repo public or a scoped token baked in (see how Noctívago handled the same problem). Not blocking while there are no external users.
 
