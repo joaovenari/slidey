@@ -2,9 +2,9 @@ name: "CodeQL Advanced"
 
 on:
   push:
-    branches: [ "main", "reveal-dist" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "reveal-dist" ]
+    branches: [ "main" ]
   schedule:
     - cron: '29 8 * * 3'
 
@@ -35,7 +35,7 @@ jobs:
 
   analyze-actions:
     name: Analyze (actions)
-    if: github.ref == 'refs/heads/main' || github.event_name == 'schedule'
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       security-events: write

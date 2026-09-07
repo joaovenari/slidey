@@ -42,7 +42,9 @@ OUTDIR="<dev-vault>/.obsidian/plugins/slidey" corepack pnpm dev
 
 ## Status
 
-As of 2026-09-07: fork assembled, rebranded, builds clean, and **smoke-tested live in Obsidian over CDP** — renders a real deck and all presentation-clicker keys navigate correctly. Next: rework `release.yml` for the flattened repo + cut the first `0.1.0` release with `slidey.zip` (needed for non-dev installs). Then real feature work — presenter-clicker focus-robustness, presets, image layout, export polish. Prior-art notes live in Claude memory (`slidey-research-markdown-slides`).
+As of 2026-09-07: fork assembled, rebranded, builds clean, **smoke-tested live in Obsidian over CDP**, and **`0.1.0` released** (prerelease, cut locally — the reworked `release.yml` is in place but not yet exercised on a run). `release.yml` / `build.yml` / `codeql.yml` all de-submoduled. Next real feature work: presenter-clicker focus-robustness (basic keys already work), then presets, image layout, export polish. Prior-art notes live in Claude memory (`slidey-research-markdown-slides`).
+
+Known gap: the repo is private, so the plugin's runtime `slidey.zip` download 401s on a fresh non-dev install — needs the repo public or a scoped token baked in (see how Noctívago handled the same problem). Not blocking while there are no external users.
 
 ### Smoke-testing over CDP
 
