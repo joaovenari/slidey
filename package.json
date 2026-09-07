@@ -1,0 +1,78 @@
+{
+    "name": "slidey",
+    "version": "0.1.0",
+    "description": "Turn a markdown note into a controllable, preset-styled slide deck. Fork of Slides Extended.",
+    "author": "joaovenari",
+    "license": "MIT",
+    "homepage": "https://github.com/joaovenari/slidey",
+    "main": "src/main.ts",
+    "scripts": {
+        "preinstall": "npx only-allow pnpm",
+        "dev": "node esbuild.config.mjs",
+        "prebuild": "pnpm exec biome check ./src",
+        "build": "node esbuild.config.mjs production",
+        "postbuild": "pnpm run test",
+        "fix": "pnpm exec biome check --write ./src",
+        "format": "pnpm exec biome format ./src",
+        "eslint": "pnpm exec eslint",
+        "lint": "pnpm exec biome lint ./src",
+        "test": "jest",
+        "coverage": "jest --coverage",
+        "preversion": "node esbuild.config.mjs production && pnpm run test",
+        "version": "auto-changelog -p",
+        "brat-notes": "run() { auto-changelog --stdout --hide-credit --hide-empty-releases --template .github/changelog.hbs -v $1 --starting-version $1  > release-notes.md; }; run"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/joaovenari/slidey.git"
+    },
+    "bugs": {
+        "url": "https://github.com/joaovenari/slidey/issues"
+    },
+    "auto-changelog": {
+        "backfillLimit": false,
+        "commitLimit": false,
+        "ignoreCommitPattern": "(🔖|👷|changelog|.* README\\.).*",
+        "replaceText": {
+            "([;.,] [rR]esolves) #\\d+\\.?\\s*$": "$1",
+            "([;.,] [Ff]ixes) #\\d+\\.?\\s*$": "$1"
+        },
+        "startingDate": "2024-02-17"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.6",
+        "@types/color": "^4.2.1",
+        "@types/jest": "^30.0.0",
+        "@types/mustache": "^4.2.6",
+        "@types/node": "^26.1.2",
+        "@types/request": "^2.48.13",
+        "@typescript-eslint/parser": "^8.65.0",
+        "auto-changelog": "^2.6.0",
+        "esbuild": "^0.28.1",
+        "esbuild-plugin-copy": "^2.1.1",
+        "esbuild-sass-plugin": "^3.7.0",
+        "eslint": "^9.39.4",
+        "eslint-plugin-obsidianmd": "^0.4.2",
+        "globals": "^17.7.0",
+        "jest": "^30.4.2",
+        "obsidian": "^1.13.1",
+        "obsidian-utilities": "^1.1.5",
+        "reveal.js": "^5.2.1",
+        "sass": "^1.102.0",
+        "ts-jest": "^29.4.12",
+        "ts-mockito": "^2.6.1",
+        "ts-node": "^10.9.2",
+        "tslib": "^2.8.1",
+        "typescript": "^5.9.3",
+        "yaml": "^2.7.1"
+    },
+    "dependencies": {
+        "@fastify/static": "^10.1.2",
+        "@progress/jszip-esm": "^1.0.4",
+        "chart.js": "^4.5.1",
+        "color": "^4.2.3",
+        "fastify": "^5.8.5",
+        "mustache": "^4.2.0"
+    },
+    "packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000"
+}

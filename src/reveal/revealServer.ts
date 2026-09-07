@@ -1,0 +1,238 @@
+import { Buffer } from "node:buffer";
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { fastifyStatic, type ListDir, type ListFile } from "@fastify/static";
+import Fastify, { type FastifyInstance } from "fastify";
+import { Notice, Platform, requestUrl, type TAbstractFile } from "obsidian";
+import type { QueryString } from "../@types";
+import type { ObsidianUtils } from "../obsidian/obsidianUtils";
+import { RevealRenderer } from "./revealRenderer";
+
+export class RevealServer {
+    private _server: FastifyInstance;
+    private readonly _port: number;
+    private readonly _host: string;
+    private readonly _url: URL;
+    private readonly _utils: ObsidianUtils;
+    private _revealRenderer: RevealRenderer;
+    private filePath: string;
+
+    constructor(utils: ObsidianUtils, port: number, host: string, url: URL) {
+        this._port = port;
+        this._host = host;
+        this._url = url;
+        this._utils = utils;
+        this._revealRenderer = new RevealRenderer(utils);
+        this.filePath = null;
+        this.initServer();
+    }
+
+    private initServer() {
+        this._server = Fastify({});
+        this._server.register(fastifyStatic, {
+            root: this._utils.vaultDirectory,
+            decorateReply: true,
+            serve: false,
+        });
+
+        this._server.get<{ Querystring: QueryString }>(
+            "/",
+            async (request, reply) => {
+                if (this.filePath === null) {
+                    reply.type("text/html").send(chooseSlides);
+                } else {
+                    const markup = await this._revealRenderer.renderFile(
+                        this.filePath,
+                        request.query,
+                    );
+                    reply.type("text/html").send(markup);
+                }
+                return reply;
+            },
+        );
+
+        for (const dir of ["plugin", "dist", "css"]) {
+            this._server.register(fastifyStatic, {
+                root: path.join(this._utils.pluginDirectory, dir),
+                prefix: `/${dir}`,
+                wildcard: true,
+                index: false,
+                decorateReply: false,
+                list: {
+                    format: "html",
+                    render: renderIndex,
+                },
+            });
+        }
+
+        this._server.get<{ Querystring: QueryString }>(
+            "/*",
+            async (request, reply) => {
+                const file = (request.params as Record<string, string>)["*"];
+
+                const renderMarkdownFile = async (filePath: string) => {
+                    const markup = await this._revealRenderer.renderFile(
+                        filePath,
+                        request.query,
+                    );
+                    reply.type("text/html").send(markup);
+                };
+
+                if (file.startsWith("local-file-url")) {
+                    const urlpath = file.replace(
+                        "local-file-url",
+                        Platform.resourcePathPrefix,
+                    );
+                    try {
+                        const result = await requestUrl(urlpath);
+                        console.debug(
+                            "Serving local file",
+                            file,
+                            urlpath,
+                            result.status,
+                        );
+                        if (result.status >= 200 && result.status < 300) {
+                            const bytes = result.arrayBuffer;
+                            reply.send(Buffer.from(bytes));
+                        } else {
+                            reply.status(result.status).send();
+                        }
+                    } catch (error) {
+                        const msg =
+                            error instanceof Error
+                                ? error.message
+                                : String(error);
+                        console.error("local file error", urlpath, msg);
+                        reply.status(404).send();
+                    }
+                } else if (file.startsWith("embed/") && file.endsWith(".md")) {
+                    console.debug("fetching embed file", file);
+                    const embedFilePath = path.resolve(
+                        this._utils.vaultDirectory,
+                        file.replace("embed/", ""),
+                    );
+                    if (
+                        !embedFilePath.startsWith(
+                            path.normalize(this._utils.vaultDirectory),
+                        )
+                    ) {
+                        reply.status(403).send();
+                        return reply;
+                    }
+                    await renderMarkdownFile(embedFilePath);
+                } else if (file.endsWith(".md")) {
+                    // top-level slide
+                    const resolvedPath = path.resolve(
+                        this._utils.vaultDirectory,
+                        file,
+                    );
+                    if (
+                        !resolvedPath.startsWith(
+                            path.normalize(this._utils.vaultDirectory),
+                        )
+                    ) {
+                        reply.status(403).send();
+                        return reply;
+                    }
+                    this.filePath = resolvedPath;
+                    console.debug("New presentation: ", file, this.filePath);
+                    await renderMarkdownFile(this.filePath);
+                } else {
+                    let serveFile = file;
+                    const sourceDir = path.dirname(this.filePath);
+                    if (sourceDir !== this._utils.vaultDirectory) {
+                        const srcPath = path.join(sourceDir, file);
+                        if (existsSync(srcPath)) {
+                            serveFile = path
+                                .relative(this._utils.vaultDirectory, srcPath)
+                                .split(path.sep)
+                                .join("/");
+                        }
+                    }
+                    console.debug(
+                        "Serve file",
+                        file,
+                        sourceDir,
+                        this._utils.vaultDirectory,
+                        serveFile,
+                    );
+                    reply.sendFile(serveFile);
+                }
+                return reply;
+            },
+        );
+    }
+
+    get running(): boolean {
+        return !!this._server.addresses().slice(-1).pop();
+    }
+
+    getTargetUrl(target: TAbstractFile): URL {
+        const url = this._url;
+        url.pathname = this.fixedEncodeURIComponent(target.path);
+        return url;
+    }
+
+    private fixedEncodeURIComponent(str: string) {
+        return str.replace(
+            /[!'()*]/g,
+            (c) => `%${c.charCodeAt(0).toString(16)}`,
+        );
+    }
+
+    async start() {
+        if (this.running) {
+            console.debug(
+                "Slidey server is already running",
+                this._server.listeningOrigin.replace(
+                    /(127\.0\.0\.1|\[::1\])/,
+                    "localhost",
+                ),
+            );
+            return;
+        }
+        try {
+            // Fastify cannot be restarted after close; create a fresh instance
+            this.initServer();
+            await this._server.listen({ host: this._host, port: this._port });
+            console.debug(
+                "Slidey is ready to go.",
+                this._server.listeningOrigin.replace(
+                    /(127\.0\.0\.1|\[::1\])/,
+                    "localhost",
+                ),
+            );
+        } catch (err) {
+            new Notice(
+                `Unable to start server. Is ${this._port} already in use?`,
+            );
+            console.error("Unable to start server", err);
+        }
+    }
+
+    async stop() {
+        if (this.running) {
+            console.debug("stopping Slidey server");
+            await this._server.close();
+        } else {
+            console.debug("Slidey server is not running");
+        }
+    }
+}
+
+const chooseSlides = `
+<html lang='en'><body>
+<p>Open Presentation Preview in Obsidian first</p>
+</body></html>`;
+
+const renderIndex = (dirs: ListDir[], files: ListFile[]) => {
+    return `
+<html lang='en'><body>
+<ul>
+  ${dirs.map((dir) => `<li><a href="${dir.href}">${dir.name}</a></li>`).join("\n  ")}
+</ul>
+<ul>
+  ${files.map((file) => `<li><a href="${file.href}" target="_blank">${file.name}</a></li>`).join("\n  ")}
+</ul>
+</body></html>`;
+};

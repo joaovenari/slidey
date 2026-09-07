@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Code Block Syntax > ::: block syntax in backtick fence is left verbatim 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+\`\`\`markdown
+::: {.callout-note}
+Note content
+:::
+\`\`\`
+</div>"
+`;
+
+exports[`Code Block Syntax > ::: block syntax in tilde fence is left verbatim 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+~~~markdown
+::: {.callout-note}
+Note content
+:::
+~~~
+</div>"
+`;
+
+exports[`Code Block Syntax > Code Blocks 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+\`\`\`dockerfile
+FROM ubuntu
+\`\`\`
+</div>"
+`;
+
+exports[`Code Block Syntax > Code Blocks with $ and underscores 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+\`\`\`dockerfile
+USER $USER_NAME:$USER_NAME
+\`\`\`
+</div>"
+`;
+
+exports[`Code Block Syntax > Math with Code Blocks 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+$$\\\\begin{vmatrix}a & b\\\\\\\\ c & d \\\\end{vmatrix}=ad-bc$$
+
+\`\`\`dockerfile
+USER $USER_NAME:$USER_NAME
+\`\`\`
+
+You can also do inline math like $s^{-2}\\_{n}\\\\sum\\_{i=1}^{n}$
+</div>"
+`;
+
+exports[`Code Block Syntax > Math with Mixed Code Blocks 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+$$\\\\begin{vmatrix}a & b\\\\\\\\ c & d \\\\end{vmatrix}=ad-bc$$
+
+\`\`\`\`md
+\`\`\`dockerfile
+USER $USER_NAME:$USER_NAME
+\`\`\`
+\`\`\`\`
+
+You can also use inline syntax (\`$s^{-2}_{n}\\sum_{i=1}^{n}$\`)
+to do inline math like $s^{-2}\\_{n}\\\\sum\\_{i=1}^{n}$
+</div>"
+`;
+
+exports[`Code Block Syntax > codeblock-ish, not math 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+\`\`\`
+USER $USER_NAME:$USER_NAME
+\`\`\`
+
+The above does not show backticks.
+Underscores should not be escaped
+</div>"
+`;
+
+exports[`Code Block Syntax > fence introduced via embedded file is still protected 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Top-level content before the embed.
+
+
+<!-- begin::[embedded-fenced-code.md] -->
+Embedded content begins here.
+
+\`\`\`markdown
+![Example](figs/nonexistent.svg)
+::: {.callout-note}
+Note content
+:::
+\`\`\`
+
+Embedded content ends here.
+<!-- end::[embedded-fenced-code.md] -->
+
+
+Top-level content after the embed.
+</div>"
+`;
+
+exports[`Code Block Syntax > media reference in backtick fence is left verbatim 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+\`\`\`markdown
+![Example](figs/nonexistent.svg)
+![[nonexistent.png]]
+\`\`\`
+</div>"
+`;
+
+exports[`Code Block Syntax > media reference in tilde fence is left verbatim 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+~~~markdown
+![Example](figs/nonexistent.svg)
+![[nonexistent.png]]
+~~~
+</div>"
+`;
+
+exports[`Code Block Syntax > no type 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+\`\`\`
+USER $USER_NAME:$USER_NAME
+\`\`\`
+
+The above does not show backticks
+</div>"
+`;
+
+exports[`Code Block Syntax > real media and ::: block still transform alongside fenced examples 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="https://picsum.photos/id/1005/250/250" alt="Real image" style="object-fit: scale-down">
+
+
+<div class="block">
+
+Real block
+</div>
+
+
+
+\`\`\`markdown
+![Example](figs/nonexistent.svg)
+::: {.callout-note}
+Note content
+:::
+\`\`\`
+</div>"
+`;
+
+exports[`Embedded code has extra characters near dollar signs 1`] = `
+"<!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+\`\`\`javascript
+export class CounterService {
+  count$ = new BehaviorSubject(1000);
+
+  double$ = this.count$.pipe(map((count) => count * 2));
+  triple$ = this.count$.pipe(map((count) => count * 3));
+
+  combined$ = combineLatest([this.double$, this.triple$]).pipe(
+    map(([double, triple]) => double + triple)
+  );
+
+  over9000$ = this.combined$.pipe(map((combined) => combined > 9000));
+
+  message$ = this.over9000$.pipe(
+    map((over9000) => (over9000 ? "It's over 9000!" : "It's under 9000."))
+  );
+}
+\`\`\`
+</div>"
+`;

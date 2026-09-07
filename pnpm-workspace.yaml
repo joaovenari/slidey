@@ -1,0 +1,15 @@
+packages:
+  - '.'
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  unrs-resolver: true
+
+minimumReleaseAge: 1440
+
+overrides:
+  glob: '>=11.1.0'
+  iconv-lite: 0.6.3
+  raw-body: 2.5.2
+  simple-swizzle@=0.2.3: '>=0.2.4'
