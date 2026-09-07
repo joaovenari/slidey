@@ -21,6 +21,12 @@
     <link rel="stylesheet" href="{{{base}}}plugin/reveal-pointer/pointer.css" />
     {{/enablePointer}}
 
+    {{#presetStyles}}
+    <style id="slidey-presets">
+{{{presetStyles}}}
+    </style>
+    {{/presetStyles}}
+
     {{#cssPaths}}
     <link rel="stylesheet" href="{{{base}}}{{{.}}}" />
     {{/cssPaths}}

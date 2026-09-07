@@ -8,6 +8,7 @@ import {
     getMediaCollector,
     type ObsidianUtils,
 } from "../obsidian/obsidianUtils";
+import { buildPresetCss } from "../presets";
 import { DEFAULTS } from "../slidesExtended-constants";
 import { has, isEmpty } from "../util";
 import { YamlParser } from "../yaml/yamlParser";
@@ -177,6 +178,7 @@ export class RevealRenderer {
             isKaTeX,
             isMathJax,
             revealOptionsStr: JSON.stringify(revealOptions),
+            presetStyles: buildPresetCss(options.presets),
         });
 
         const localAssetPaths = [

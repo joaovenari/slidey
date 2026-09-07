@@ -36,6 +36,7 @@ export interface SlidesExtendedSettings {
     remoteScripts: string;
     separator: string;
     verticalSeparator: string;
+    presets: import("../presets").SlidePreset[];
 }
 
 export type ChartJsOptions = {
@@ -73,6 +74,10 @@ export type Options = {
     enableCustomControls: boolean;
     transition: string;
     mathEngine: "katex" | "mathjax";
+    /** Deck-wide default preset (note frontmatter `preset:`). */
+    preset?: string;
+    /** Preset definitions, from plugin settings. */
+    presets?: import("../presets").SlidePreset[];
     [key: string]: unknown;
 };
 

@@ -12,6 +12,7 @@ import {
     getThemeFiles,
     ThemeInputSuggest,
 } from "./obsidian/suggesters/ThemeSuggester";
+import { type SlidePreset, STARTER_PRESETS } from "./presets";
 import { DEFAULT_SETTINGS } from "./slidesExtended-constants";
 import type { SlidesExtendedPlugin } from "./slidesExtended-Plugin";
 
@@ -542,5 +543,126 @@ export class SlidesExtendedSettingTab extends PluginSettingTab {
                             | "mathjax";
                     });
             });
+
+        this.drawPresets(containerEl);
+    }
+
+    /**
+     * Slide presets — a named look a slide opts into with `preset:` in the note
+     * frontmatter or `<!-- slide preset="name" -->` per slide. The structured
+     * fields cover the common case without CSS; "Custom CSS" is the escape hatch
+     * (`&` = the slide selector).
+     */
+    private drawPresets(containerEl: HTMLElement): void {
+        if (!Array.isArray(this.newSettings.presets)) {
+            this.newSettings.presets = JSON.parse(
+                JSON.stringify(STARTER_PRESETS),
+            ) as SlidePreset[];
+        }
+
+        new Setting(containerEl)
+            .setName("Slide presets")
+            .setHeading()
+            .setDesc(
+                'Use one with "preset: <name>" in a note\'s frontmatter, or ' +
+                    '"<!-- slide preset=\\"<name>\\" -->" on a single slide. ' +
+                    '"preset: none" on a slide opts out of the deck default.',
+            )
+            .addButton((btn) =>
+                btn.setButtonText("Add preset").onClick(() => {
+                    this.newSettings.presets.push({
+                        name: `preset-${this.newSettings.presets.length + 1}`,
+                        align: "center",
+                    });
+                    void this.save();
+                    this.display();
+                }),
+            )
+            .addButton((btn) =>
+                btn.setButtonText("Reset to starters").onClick(() => {
+                    this.newSettings.presets = JSON.parse(
+                        JSON.stringify(STARTER_PRESETS),
+                    ) as SlidePreset[];
+                    void this.save();
+                    this.display();
+                }),
+            );
+
+        this.newSettings.presets.forEach((preset, index) => {
+            const box = containerEl.createDiv({ cls: "slidey-preset-editor" });
+
+            new Setting(box)
+                .setName(preset.label || preset.name || `Preset ${index + 1}`)
+                .setDesc(`class: .slidey-preset-${preset.name || "?"}`)
+                .addText((text) =>
+                    text
+                        .setPlaceholder("name (used in markdown)")
+                        .setValue(preset.name ?? "")
+                        .onChange((v) => {
+                            preset.name = v.trim();
+                        }),
+                )
+                .addExtraButton((btn) =>
+                    btn
+                        .setIcon("trash")
+                        .setTooltip("Delete preset")
+                        .onClick(() => {
+                            this.newSettings.presets.splice(index, 1);
+                            void this.save();
+                            this.display();
+                        }),
+                );
+
+            const color = (
+                label: string,
+                key: "background" | "color" | "accent",
+            ) =>
+                new Setting(box).setName(label).addText((text) =>
+                    text
+                        .setPlaceholder("e.g. #4dabf7 (blank = theme)")
+                        .setValue(preset[key] ?? "")
+                        .onChange((v) => {
+                            preset[key] = v.trim() || undefined;
+                        }),
+                );
+            color("Background", "background");
+            color("Text color", "color");
+            color("Accent color", "accent");
+
+            new Setting(box).setName("Font scale").addText((text) =>
+                text
+                    .setPlaceholder("1")
+                    .setValue(preset.fontScale ? String(preset.fontScale) : "")
+                    .onChange((v) => {
+                        const n = Number.parseFloat(v);
+                        preset.fontScale =
+                            Number.isFinite(n) && n > 0 ? n : undefined;
+                    }),
+            );
+
+            new Setting(box).setName("Alignment").addDropdown((cb) =>
+                cb
+                    .addOption("", "(theme default)")
+                    .addOption("left", "Left")
+                    .addOption("center", "Center")
+                    .addOption("right", "Right")
+                    .setValue(preset.align ?? "")
+                    .onChange((v) => {
+                        preset.align = (v || undefined) as SlidePreset["align"];
+                    }),
+            );
+
+            new Setting(box)
+                .setName("Custom CSS")
+                .setDesc("Advanced. `&` is replaced with the slide selector.")
+                .addTextArea((area) => {
+                    area.setValue(preset.css ?? "").onChange((v) => {
+                        preset.css = v || undefined;
+                    });
+                    area.inputEl.rows = 4;
+                    area.inputEl.style.width = "100%";
+                    area.inputEl.style.fontFamily = "var(--font-monospace)";
+                });
+        });
     }
 }

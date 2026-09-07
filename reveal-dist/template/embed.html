@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="{{{base}}}{{{themeUrl}}}" id="theme" />
     <link rel="stylesheet" href="{{{base}}}{{{highlightThemeUrl}}}" />
 
+    {{#presetStyles}}
+    <style id="slidey-presets">
+{{{presetStyles}}}
+    </style>
+    {{/presetStyles}}
+
     {{#cssPaths}}
     <link rel="stylesheet" href="{{{base}}}{{{.}}}" />
     {{/cssPaths}}
