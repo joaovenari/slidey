@@ -24,13 +24,16 @@ old
 examples/
 *.out
 
+slidey/
+slidey.zip
 slides-extended/
 slides-extended.zip
 settings.local.json
 export
 qrspi
 
-# slidey dev
+# slidey: root main.js/styles.css only exist transiently during release packaging
+/main.js
+/styles.css
+/release-notes.md
 .hotreload
-main.js
-styles.css

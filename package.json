@@ -9,6 +9,9 @@
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "dev": "node esbuild.config.mjs",
+        "dev:vault": "node scripts/dev.mjs",
+        "reveal:build": "pnpm --dir reveal-dist install && pnpm --dir reveal-dist build",
+        "sync-assets": "node scripts/sync-reveal-assets.mjs",
         "prebuild": "pnpm exec biome check ./src",
         "build": "node esbuild.config.mjs production",
         "postbuild": "pnpm run test",
