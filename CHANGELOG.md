@@ -5,11 +5,10 @@ Upstream (Slides Extended) history is frozen in `CHANGELOG-upstream-slides-exten
 
 ## [Unreleased]
 
-- **Presentation-clicker robustness** — the preview view now grabs keyboard focus for the deck iframe on load and on any click in the pane, and forwards PageUp/PageDown/arrows/Space to reveal.js over `postMessage` when focus is on the Obsidian chrome instead of the slides. A physical clicker (or the arrow keys) now drives the deck without having to click the slides first.
+- **Presentation-clicker robustness** — the preview view now grabs keyboard focus for the deck iframe on load and on any click in the pane, and forwards PageUp/PageDown/arrows/Space to reveal.js over `postMessage` when focus is on the Obsidian chrome instead of the slides. A physical clicker (or the arrow keys) now drives the deck without having to click the slides first. Verified live: every nav key navigates correctly, including through vertical slide stacks.
 
 ### Not yet done
 
-- Live re-test of the clicker change + a pass with a real presentation remote.
 - Slidey's actual features: opinionated slide presets, image-layout defaults, PDF/PPTX export polish.
 - Rebrand of internal TypeScript identifiers (`SlidesExtendedPlugin`, `slidesExtended-*.ts`) — cosmetic, deferred.
 - Automated `release.yml` reworked for the flat repo but not yet exercised (0.1.0 was cut locally). Private-repo `slidey.zip` download needs the repo public or a token before non-dev installs work.
