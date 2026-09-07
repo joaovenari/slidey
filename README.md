@@ -2,7 +2,7 @@
 
 Turn a markdown note into a controllable, preset-styled slide deck — write in Obsidian, present with a physical clicker, export to PDF/HTML.
 
-> **Status: early.** Slidey is a hard fork of [Slides Extended](https://github.com/ebullient/obsidian-slides-extended) (v2.4.3), just getting started. Right now it *is* Slides Extended with a new name; the Slidey-specific work (opinionated presets, reliable presentation-remote handling, a tighter authoring loop) is in progress.
+> **Status: early.** Slidey is a hard fork of [Slides Extended](https://github.com/ebullient/obsidian-slides-extended) (v2.4.3). Slide presets and presentation-remote handling are in; image-layout defaults and export polish are next.
 
 ## Features (inherited from Slides Extended)
 
@@ -13,11 +13,14 @@ Turn a markdown note into a controllable, preset-styled slide deck — write in 
 - Math (KaTeX / MathJax), Mermaid, syntax highlighting, charts
 - Export as PDF or as a standalone HTML presentation
 
-## Planned for Slidey
+## Slidey additions
 
-- Slide presets/templates you pick per slide
-- Presentation USB clicker support that actually works (PageUp/PageDown/arrows, focus handling)
-- Better image layout defaults
+- **Slide presets** — `preset: <name>` in the note frontmatter (deck default) or `<!-- slide preset="quote" -->` per slide. Ships `cover`, `section`, `quote`, `image-left`, `bullets`, `code`, `image-bg`; edit them in Settings → Slide presets.
+- **Presentation clicker support** — the deck keeps keyboard focus and PageUp/PageDown/arrows/Space drive it even when the editor is focused.
+
+### Planned
+
+- Better image-layout defaults
 - PDF / PPTX export polish
 
 ## Development
