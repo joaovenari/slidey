@@ -42,7 +42,11 @@ OUTDIR="<dev-vault>/.obsidian/plugins/slidey" corepack pnpm dev
 
 ## Status
 
-As of 2026-09-07: fork assembled and rebranded. First build + dev-vault load not yet verified. Presenter-clicker handling (PageUp/PageDown/arrows/Space + keeping focus on the deck iframe) and the preset system are the first real feature work, not yet started. Prior-art notes live in Claude memory (`slidey-research-markdown-slides`).
+As of 2026-09-07: fork assembled, rebranded, builds clean, and **smoke-tested live in Obsidian over CDP** — renders a real deck and all presentation-clicker keys navigate correctly. Next: rework `release.yml` for the flattened repo + cut the first `0.1.0` release with `slidey.zip` (needed for non-dev installs). Then real feature work — presenter-clicker focus-robustness, presets, image layout, export polish. Prior-art notes live in Claude memory (`slidey-research-markdown-slides`).
+
+### Smoke-testing over CDP
+
+Obsidian must be launched with `--remote-debugging-port=9222` (needs the user to quit their running instance first). The deck renders in a separate `type:"iframe"` CDP target at `http://localhost:3000/<vault-relative-path>` — connect to that target directly; `window.Reveal` is the reveal.js API. Details + scripts in Claude memory (`slidey-obsidian-cdp-testing`).
 
 ## Development workflow (inherited from Noctívago)
 

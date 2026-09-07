@@ -12,11 +12,12 @@ Upstream (Slides Extended) history is frozen in `CHANGELOG-upstream-slides-exten
 - Normalized all line endings to LF (`.gitattributes`).
 - Added `scripts/sync-reveal-assets.mjs` + `scripts/dev.mjs` and `pnpm dev:vault` / `pnpm reveal:build` — one-command dev loop that assembles a complete plugin folder into `se-test-vault/` (no GitHub release needed for local dev).
 - Build verified: `reveal-dist` build + 57 tests pass; plugin build + 138 tests / 90 snapshots pass; Biome clean.
+- **Smoke-tested live in Obsidian** (over CDP): plugin loads clean, renders the test deck (5 slides, black theme, syntax highlighting, KaTeX, controls, progress bar), and all presentation-clicker keys — PageDown, PageUp, Space, ArrowRight/Left/Down — navigate correctly, including into and out of vertical slide stacks.
 - Research pass on existing markdown-to-slides tools and Obsidian slide plugins (see Claude memory `slidey-research-markdown-slides`).
 
 ### Not yet done
 
-- Live in-Obsidian smoke test (render a deck, presenter-clicker keys).
-- Slidey's actual features: opinionated slide presets, reliable presentation-remote handling, image-layout defaults, PDF/PPTX export polish.
+- Rework `release.yml` for the flattened repo and cut the first `0.1.0` release with `slidey.zip` (required for non-dev installs).
+- Slidey's actual features: presenter-clicker focus-robustness (basic keys already work), opinionated slide presets, image-layout defaults, PDF/PPTX export polish.
 - Rebrand of internal TypeScript identifiers (`SlidesExtendedPlugin`, `slidesExtended-*.ts`) — cosmetic, deferred.
 - CI (`build.yml` builds only the plugin; `release.yml` still references upstream's submodule flow and needs rework before the first real release).
