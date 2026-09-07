@@ -20,6 +20,21 @@ export class RevealPreviewView extends ItemView {
     private yaml: YamlParser;
     private plugin: SlidesExtendedPlugin;
 
+    // Keys a presentation remote / clicker emits, mapped to the reveal.js
+    // postMessage API method that performs the same navigation. Clickers
+    // almost always send PageUp/PageDown (some send arrows); Space is the
+    // common "advance" on the ones that double as a laser pointer.
+    private readonly navKeyMethods: Record<string, string> = {
+        PageDown: "next",
+        PageUp: "prev",
+        ArrowRight: "right",
+        ArrowLeft: "left",
+        ArrowUp: "up",
+        ArrowDown: "down",
+        " ": "next",
+        Spacebar: "next",
+    };
+
     constructor(
         leaf: WorkspaceLeaf,
         home: URL,
@@ -53,6 +68,54 @@ export class RevealPreviewView extends ItemView {
         }
 
         window.addEventListener("message", this.boundOnMessage);
+
+        // Presentation-remote robustness. A physical clicker is just a USB
+        // keyboard sending PageUp/PageDown (etc.); those only reach reveal.js
+        // if the deck iframe holds keyboard focus. Two safeguards:
+        //
+        //  1. Pull focus into the iframe whenever the user interacts with the
+        //     preview pane (and when a fresh deck finishes loading).
+        //  2. If a nav key is pressed while focus is still on the Obsidian
+        //     chrome around the preview, forward it to reveal.js over
+        //     postMessage. Keydowns raised *inside* the focused iframe never
+        //     bubble out to this listener, so this is a pure fallback and
+        //     won't double-trigger.
+        this.registerDomEvent(this.containerEl, "pointerdown", () => {
+            window.setTimeout(() => this.focusDeck(), 0);
+        });
+        this.registerDomEvent(
+            this.containerEl,
+            "keydown",
+            (evt: KeyboardEvent) => {
+                const method = this.navKeyMethods[evt.key];
+                if (method && this.forwardToDeck(method)) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
+            },
+        );
+    }
+
+    private getIframe(): HTMLIFrameElement | null {
+        return this.containerEl.querySelector("iframe");
+    }
+
+    private focusDeck() {
+        const iframe = this.getIframe();
+        iframe?.focus();
+        iframe?.contentWindow?.focus();
+    }
+
+    private forwardToDeck(method: string): boolean {
+        const iframe = this.getIframe();
+        if (!iframe?.contentWindow || this.url === "about:blank") {
+            return false;
+        }
+        iframe.contentWindow.postMessage(
+            JSON.stringify({ method, args: [] }),
+            new URL(this.url).origin,
+        );
+        return true;
     }
 
     onPaneMenu(menu: Menu, source: string): void {
@@ -284,12 +347,15 @@ export class RevealPreviewView extends ItemView {
 
         viewContent.empty();
         viewContent.addClass("reveal-preview-view");
-        viewContent.createEl("iframe", {
+        const iframe = viewContent.createEl("iframe", {
             attr: {
                 // @ts-expect-error:
                 src: this.url,
                 sandbox: "allow-scripts allow-same-origin allow-popups",
             },
         });
+        // Hand keyboard focus to the freshly loaded deck so a clicker works
+        // immediately, without the user needing to click the slides first.
+        iframe.addEventListener("load", () => this.focusDeck());
     }
 }
